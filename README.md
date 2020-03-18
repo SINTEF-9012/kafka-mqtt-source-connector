@@ -5,13 +5,13 @@ A connector plugin to use with Kafka's Connect API. It can be configured to map 
 ## Setting up a single Zookeeper and Kafka instance
 To be able to test the connector, we first need to set up the Kafka infrastructure. For simplicity, we start by configuring single nodes (one Zookeeper and one Kafka).
 
-##Prerequisites##
+### Prerequisites
 - Java version >8 installed to run Kafka and this source-connector. Check if Java is installed, and which version by running `java -version` in your terminal. We use `openjdk version "11.0.6" 2020-01-14`.
 - Linux. We are running this setup on Ubuntu 16.4.
 - A mqtt-broker. We use EMQX
 - Maven. Check if maven is installed properly with running `mvn -v` in your terminal. We use Maven 3.6.0
 
-##Mqtt Broker - EMQX##
+### Mqtt Broker - EMQX
 - Download EMQX from [https://www.emqx.io/downloads](https://www.emqx.io/downloads)
 - Extract the download to your desired destination, here termed _"path-to-emqx"_.
 - Run the following command in your terminal to start the EMQX broker:
@@ -23,12 +23,12 @@ To be able to test the connector, we first need to set up the Kafka infrastructu
 "path-to-emqx"/emqx/bin/emqx_ctl status
 ```
  
-##Download Kafka binaries##
+### Download Kafka binaries
 Download a binary Kafka release from https://kafka.apache.org/downloads. We work with the compressed download:
 >kafka_2.13-2.4.1.tgz
 Extract the download to your desired destination, here termed _"path-to-kafka"_.
 
-##Zookeeper##
+###Zookeeper
 About Zookeeper:
 >"Zookeeper is a top-level software developed by Apache that acts as a centralized service and is used to maintain naming and configuration data and to provide flexible and robust synchronization within distributed systems. Zookeeper keeps track of status of the Kafka cluster nodes and it also keeps track of Kafka topics, partitions etc.
 Zookeeper it self is allowing multiple clients to perform simultaneous reads and writes and acts as a shared configuration service within the system. The Zookeeper atomic broadcast (ZAB) protocol i s the brains of the whole system, making it possible for Zookeeper to act as an atomic broadcast system and issue orderly updates." [Cloudkarafka](https://www.cloudkarafka.com/blog/2018-07-04-cloudkarafka_what_is_zookeeper.html)
@@ -39,7 +39,7 @@ Zookeeper it self is allowing multiple clients to perform simultaneous reads and
 ```
 P.S. The default properties of zookeeper.properties works well for this tutorial's purpose. It will start Zookeeper on the default port `2181`.
 
-##Kafka Broker##
+### Kafka Broker
 As mentioned, we will only kick up a single instance Kafka Broker. The Kafka Broker will use `"path-to-kafka"/kafka_2.13-2.4.1/config/server.properties`, and it could be worth checking that 
 ```
 zookeeper.connect=localhost:2181
@@ -56,7 +56,7 @@ or set according to your custom configuration in `zookeeper.properties`.
 "path-to-kafka"/kafka_2.13-2.4.1/bin/kafka-topics --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 1 --topic test
 ```
 
-##Kafka Connect##
+### Kafka Connect
 The Kafka Connect API is what we utilise as a framework around our connectors, to handle scaling, polling from Kafka, work distribution etc. Kafka Connect can run as _connect-standalone_ or as _connect-distributed_. The _connect-standalone_ is engineered for demo and test purposes, as it cannot provide fallback in a production environment. 
 
 **Start Kafka Connect**
