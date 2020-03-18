@@ -28,7 +28,7 @@ public class MqttSourceConnectorConfig extends AbstractConfig {
                 "Full uri to mqtt broker")
                 .define("mqtt.connector.broker.topic", Type.STRING, "upstream/#", Importance.HIGH,
                         "mqtt server to connect to")
-                .define("mqtt.connector.client.id", Type.STRING, "mqtt_source_connector", Importance.MEDIUM,
+                .define("mqtt.connector.client.id", Type.STRING, "kafka_source_connector", Importance.MEDIUM,
         "mqtt client id to use don't set to use random")
                 .define("mqtt.connector.clean_session", Type.BOOLEAN, true, Importance.MEDIUM,
         "If connection should begin with clean session")
@@ -40,11 +40,11 @@ public class MqttSourceConnectorConfig extends AbstractConfig {
                         "which qos to use for paho client connection")
                 .define("mqtt.connector.ssl", Type.BOOLEAN, false, Importance.LOW,
                         "which qos to use for paho client connection")
-                .define("mqtt.connector.ssl.ca", Type.STRING, "/home/asam/Documents/Aventi/ca.crt", Importance.LOW,
+                .define("mqtt.connector.ssl.ca", Type.STRING, "./ca.crt", Importance.LOW,
                         "If secure (SSL) then path to CA is needed.")
-                .define("mqtt.connector.ssl.crt", Type.STRING, "/home/asam/Documents/Aventi/client.crt", Importance.LOW,
+                .define("mqtt.connector.ssl.crt", Type.STRING, "./client.crt", Importance.LOW,
                         "If secure (SSL) then path to client crt is needed.")
-                .define("mqtt.connector.ssl.key", Type.STRING, "/home/asam/Documents/Aventi/client.key", Importance.LOW,
+                .define("mqtt.connector.ssl.key", Type.STRING, "./client.key", Importance.LOW,
                         "If secure (SSL) then path to client key is needed.")
                 .define("mqtt.connector.kafka.topic", Type.STRING, "upstream", Importance.MEDIUM,
                         "Kafka topic to publish on. This depends on processing unit.")

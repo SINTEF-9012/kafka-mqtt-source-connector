@@ -39,7 +39,7 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
         mqttConnectOptions.setCleanSession(connectorConfiguration.getBoolean("mqtt.connector.clean_session"));
         mqttConnectOptions.setKeepAliveInterval(connectorConfiguration.getInt("mqtt.connector.connection_timeout"));
         if (connectorConfiguration.getBoolean("mqtt.connector.ssl")) {
-            logger.error("SSL TRUE for AsamMqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
+            logger.info("SSL TRUE for MqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
             try {
                 String caCrtFilePath = connectorConfiguration.getString("mqtt.connector.ssl.ca");
                 String crtFilePath = connectorConfiguration.getString("mqtt.connector.ssl.crt");
@@ -48,18 +48,18 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
                 sslSocketFactory = sslUtils.getMqttSocketFactory();
                 mqttConnectOptions.setSocketFactory(sslSocketFactory);
             } catch (Exception e) {
-                logger.error("Not able to create socket factory for mqtt client: '{}', and connector: '{}'", mqttClientId, connectorName);
+                logger.error("Not able to create SSLSocketfactory: '{}', for mqtt client: '{}', and connector: '{}'", sslSocketFactory, mqttClientId, connectorName);
                 logger.error(e);
             }
         } else {
-            logger.debug("SSL FALSE for AsamMqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
+            logger.info("SSL FALSE for MqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
         }
 
         try {
             mqttClient = new MqttClient(connectorConfiguration.getString("mqtt.connector.broker.uri"), mqttClientId, new MemoryPersistence());
             mqttClient.setCallback(this);
             mqttClient.connect(mqttConnectOptions);
-            logger.error("SUCCESSFULL MQTT CONNECTION for AsamMqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
+            logger.info("SUCCESSFULL MQTT CONNECTION for AsamMqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
         } catch (MqttException e) {
             logger.error("FAILED MQTT CONNECTION for AsamMqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
             logger.error(e);
@@ -67,9 +67,9 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
 
         try {
             mqttClient.subscribe(mqttTopic, connectorConfiguration.getInt("mqtt.connector.qos"));
-            logger.info("Subscribed to topic " +mqttTopic+ " SUCCESSFULLY, for connector " + connectorName + ".");
+            logger.info("SUCCESSFULL MQTT CONNECTION for MqttSinkConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
         } catch (MqttException e) {
-            logger.error("Connection to topic FAILED for topic" +mqttTopic+ " connection to broker, for connector" + connectorName + ".", e);
+            logger.error("FAILED MQTT CONNECTION for MqttSinkConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
             e.printStackTrace();
         }
 

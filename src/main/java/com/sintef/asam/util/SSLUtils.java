@@ -7,16 +7,8 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import javax.net.ssl.*;
+import java.io.*;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.Security;
@@ -57,47 +49,6 @@ public class SSLUtils {
         return password;
     }
 
-    public SSLSocketFactory getSocketFactory () throws Exception
-    {
-        Security.addProvider(new BouncyCastleProvider());
-
-        // load CA certificate
-        PEMParser reader = new PEMParser(Files.newBufferedReader(Paths.get(caCrtFile)));
-        X509Certificate caCert = (X509Certificate)reader.readObject();
-        reader.close();
-
-        // load client certificate
-        reader = new PEMParser(Files.newBufferedReader(Paths.get(crtFile)));
-        X509Certificate cert = (X509Certificate)reader.readObject();
-        reader.close();
-
-        // load client private key
-        reader = new PEMParser(Files.newBufferedReader(Paths.get(keyFile)));
-        KeyPair key = (KeyPair)reader.readObject();
-        reader.close();
-
-        // CA certificate is used to authenticate server
-        KeyStore caKs = KeyStore.getInstance("JKS");
-        caKs.load(null, null);
-        caKs.setCertificateEntry("ca-certificate", caCert);
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX");
-        tmf.init(caKs);
-
-        // client key and certificates are sent to server so it can authenticate us
-        KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(null, null);
-        ks.setCertificateEntry("certificate", cert);
-        ks.setKeyEntry("private-key", key.getPrivate(), password.toCharArray(), new java.security.cert.Certificate[]{cert});
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX");
-        kmf.init(ks, password.toCharArray());
-
-        // finally, create SSL socket factory
-        SSLContext context = SSLContext.getInstance("TLSv1");
-        context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-        return context.getSocketFactory();
-    }
-
     public SSLSocketFactory getMqttSocketFactory() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
 
@@ -106,11 +57,10 @@ public class SSLUtils {
 
         FileInputStream fis = new FileInputStream(caCrtFile);
         BufferedInputStream bis = new BufferedInputStream(fis);
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        CertificateFactory cf = CertificateFactory.getInstance("X509", "BC");
 
         while (bis.available() > 0) {
             caCert = (X509Certificate) cf.generateCertificate(bis);
-            // System.out.println(caCert.toString());
         }
 
         // load client certificate
@@ -147,7 +97,7 @@ public class SSLUtils {
         tmf.init(caKs);
 
         // client key and certificates are sent to server so it can authenticate us
-        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        KeyStore ks = KeyStore.getInstance("RSA", "BC");
         ks.load(null, null);
         ks.setCertificateEntry("certificate", cert);
         ks.setKeyEntry("private-key", key.getPrivate(), password.toCharArray(),
@@ -159,7 +109,6 @@ public class SSLUtils {
         // finally, create SSL socket factory
         SSLContext context = SSLContext.getInstance("TLSv1.2");
         context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
         return context.getSocketFactory();
     }
 
