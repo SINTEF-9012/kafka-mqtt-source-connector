@@ -67,7 +67,12 @@ Build this java maven project, but navigating to root `kafka-mqtt-source-connect
 ```
 mvn install
 ``` 
-`Copy the kafka-mqtt-source-connector-"version".jar` from your maven target directory to the directory `/usr/share/java/kafka`.
+`Copy the kafka-mqtt-source-connector-"version".jar` from your maven target directory to the directory `/usr/share/java/kafka`:
+
+```
+sudo mkdir /usr/share/java/kafka
+sudo cp ./target/*.jar /usr/share/java/kafka/.
+```
 
 **Insecure - using tcp**
 __*Connect Standalone*__ 
