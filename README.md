@@ -134,6 +134,7 @@ and see the message appear base64 encoded to your Kafka Consumer.
 **Secure - using SSL**
 
 __Setting up your own certificate authority (for test purposes) and configure MQTT broker to use SSL__
+
 We first need certificates and keys to encrypt our _secure socket layer_ (SSL) communication to and from the broker. To make your own certificate authority, and to create a client certificate and a client key, this provides very thorough and instructive guide: https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/
 
 Let us assume that you have a `/home/CA.crt`, a `/home/client.crt` and a `/home/client.key`, we configure our EMQX broker by finding the configuration file `"path-to-emqx"/etc/emqx.conf` and setting/uncommenting the following properties:
