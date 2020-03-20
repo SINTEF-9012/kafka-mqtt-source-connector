@@ -131,7 +131,20 @@ mosquitto_pub -h 127.0.0.1 -p 1883 -t test -m "Hello, world!"
 ```
 and see the message appear base64 encoded to your Kafka Consumer.
 
-**Secure - using SSL**  
+**Secure - using SSL**
+
+__Setting up your own certificate authority (for test purposes) and configure MQTT broker to use SSL__
+We first need certificates and keys to encrypt our _secure socket layer_ (SSL) communication to and from the broker. To make your own certificate authority, and to create a client certificate and a client key, this provides very thorough and instructive guide: https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/
+
+Let us assume that you have a `/home/CA.crt`, a `/home/client.crt` and a `/home/client.key`, we configure our EMQX broker by finding the configuration file `"path-to-emqx"/etc/emqx.conf` and setting/uncommenting the following properties:
+ ```
+listener.ssl.external = 8883
+listener.ssl.external.access.1 = allow all
+listener.ssl.external.keyfile = /home/client.key
+listener.ssl.external.certfile = /home/client.cert
+listener.ssl.external.cacertfile = /home/CA.cert
+```
+Then restart your mqtt broker.
 
 __*Connect Distributed*__
 12. Delete the previous made connector using TCP, if one is running, using the following call to the Connect REST-interface:
