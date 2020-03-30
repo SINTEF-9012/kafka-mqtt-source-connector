@@ -28,7 +28,7 @@ Download a binary Kafka release from https://kafka.apache.org/downloads. We work
 >kafka_2.13-2.4.1.tgz
 Extract the download to your desired destination, here termed _"path-to-kafka"_.
 
-###Zookeeper
+### Zookeeper
 About Zookeeper:
 >"Zookeeper is a top-level software developed by Apache that acts as a centralized service and is used to maintain naming and configuration data and to provide flexible and robust synchronization within distributed systems. Zookeeper keeps track of status of the Kafka cluster nodes and it also keeps track of Kafka topics, partitions etc.
 Zookeeper it self is allowing multiple clients to perform simultaneous reads and writes and acts as a shared configuration service within the system. The Zookeeper atomic broadcast (ZAB) protocol i s the brains of the whole system, making it possible for Zookeeper to act as an atomic broadcast system and issue orderly updates." [Cloudkarafka](https://www.cloudkarafka.com/blog/2018-07-04-cloudkarafka_what_is_zookeeper.html)
