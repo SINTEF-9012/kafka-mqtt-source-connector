@@ -12,10 +12,16 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
+import org.bson.Document;
 
 public class MqttSourceConnectorTask extends SourceTask implements MqttCallback {
 
@@ -113,8 +119,11 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
         logger.debug("Mqtt message arrived to connector: '{}', running client: '{}', on topic: '{}'.", connectorName, mqttClientId, tempMqttTopic);
         try {
             logger.debug("Mqtt message payload in byte array: '{}'", mqttMessage.getPayload());
+            //mqttRecordQueue.put(new SourceRecord(null, null, kafkaTopic, null,
+            //        Schema.STRING_SCHEMA, addTopicToJSONByteArray(mqttMessage.getPayload(), tempMqttTopic))
+            //);
             mqttRecordQueue.put(new SourceRecord(null, null, kafkaTopic, null,
-                    Schema.BYTES_SCHEMA, addTopicToJSONByteArray(mqttMessage.getPayload(), tempMqttTopic))
+                    Schema.STRING_SCHEMA, makeDBDoc(mqttMessage.getPayload(), tempMqttTopic))
             );
         } catch (Exception e) {
             logger.error("ERROR: Not able to create source record from mqtt message '{}' arrived on topic '{}' for client '{}'.", mqttMessage.toString(), tempMqttTopic, mqttClientId);
@@ -143,4 +152,20 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
         return byteArrayWithTopic;
     }
 
+    private String makeDBDoc(byte[] payload, String topic) {
+      String msg = new String(payload);
+      Document message = Document.parse(msg);
+      Document doc = new Document();
+      List<String> topicArr = Arrays.asList(topic.split("/"));
+      Long unique_id = Long.parseLong(topicArr.get(21));
+      Long quadkey = Long.parseLong(String.join("",topicArr.subList(2,19)));
+      String now = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
+
+      doc.put("message",message);
+      doc.put("unique_id",unique_id);
+      doc.put("quadkey",quadkey);
+      doc.put("updateDate",now);
+      doc.put("pushed",false);
+      return doc.toJson();
+    }
 }
