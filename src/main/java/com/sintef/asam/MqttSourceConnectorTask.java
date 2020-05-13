@@ -54,7 +54,6 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
         } else {
             logger.info("SSL FALSE for MqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
         }
-
         try {
             mqttClient = new MqttClient(connectorConfiguration.getString("mqtt.connector.broker.uri"), mqttClientId, new MemoryPersistence());
             mqttClient.setCallback(this);
@@ -64,7 +63,6 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
             logger.error("FAILED MQTT CONNECTION for AsamMqttSourceConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
             logger.error(e);
         }
-
         try {
             mqttClient.subscribe(mqttTopic, connectorConfiguration.getInt("mqtt.connector.qos"));
             logger.info("SUCCESSFULL MQTT CONNECTION for MqttSinkConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
@@ -72,7 +70,6 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
             logger.error("FAILED MQTT CONNECTION for MqttSinkConnectorTask: '{}, and mqtt client: '{}'.", connectorName, mqttClientId);
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -94,7 +91,8 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
     @Override
     public List<SourceRecord> poll() throws InterruptedException {
         List<SourceRecord> records = new ArrayList<>();
-        records.add(mqttRecordQueue.take());
+        SourceRecord rec = mqttRecordQueue.take();
+        records.add(rec);
         return records;
     }
 
@@ -113,9 +111,13 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
         logger.debug("Mqtt message arrived to connector: '{}', running client: '{}', on topic: '{}'.", connectorName, mqttClientId, tempMqttTopic);
         try {
             logger.debug("Mqtt message payload in byte array: '{}'", mqttMessage.getPayload());
+
             mqttRecordQueue.put(new SourceRecord(null, null, kafkaTopic, null,
-                    Schema.BYTES_SCHEMA, addTopicToJSONByteArray(mqttMessage.getPayload(), tempMqttTopic))
+                    Schema.STRING_SCHEMA, getStationIdFromTopic(tempMqttTopic), Schema.BYTES_SCHEMA, addTopicToJSONByteArray(mqttMessage.getPayload(), tempMqttTopic))
             );
+            /*mqttRecordQueue.put(new SourceRecord(null, null, kafkaTopic, null,
+                    Schema.BYTES_SCHEMA, addTopicToJSONByteArray(mqttMessage.getPayload(), tempMqttTopic))
+            );*/
         } catch (Exception e) {
             logger.error("ERROR: Not able to create source record from mqtt message '{}' arrived on topic '{}' for client '{}'.", mqttMessage.toString(), tempMqttTopic, mqttClientId);
             logger.error(e);
@@ -141,6 +143,12 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
         }
         logger.debug("New payload with topic key/value, as ascii array: '{}'", byteArrayWithTopic);
         return byteArrayWithTopic;
+    }
+
+    private String getStationIdFromTopic(String topic) {
+        String[] topicAsList = topic.split("/");
+        logger.debug("STATION ID EXTRACTED: '{}'", topicAsList[topicAsList.length-2]);
+        return topicAsList[topicAsList.length-2];
     }
 
 }
