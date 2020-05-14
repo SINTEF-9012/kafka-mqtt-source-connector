@@ -158,13 +158,14 @@ public class MqttSourceConnectorTask extends SourceTask implements MqttCallback 
       Document doc = new Document();
       List<String> topicArr = Arrays.asList(topic.split("/"));
       Long unique_id = Long.parseLong(topicArr.get(21));
-      Long quadkey = Long.parseLong(String.join("",topicArr.subList(2,19)));
+      Long quadkey = Long.parseLong(String.join("",topicArr.subList(2,20)));
       String now = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
-
+      Document dt = new Document();
+      dt.put("$date",now);
       doc.put("message",message);
       doc.put("unique_id",unique_id);
       doc.put("quadkey",quadkey);
-      doc.put("updateDate",now);
+      doc.put("updateDate",dt);
       doc.put("pushed",false);
       return doc.toJson();
     }
