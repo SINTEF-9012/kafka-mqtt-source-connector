@@ -121,6 +121,7 @@ curl -s -X POST -H 'Content-Type: application/json' http://127.0.0.1:19005/conne
 curl 'Content-Type: application/json' http://127.0.0.1:19005/connectors
 ```
 where the response is an array with connectors by name.
+```
 9. Test the connector by making a Kafka Consumer subscribing to the topic `test`:
 ```
 Documents/confluent-5.4.0/bin/kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic test
