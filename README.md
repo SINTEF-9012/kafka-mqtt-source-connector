@@ -99,6 +99,7 @@ where `mqtt.connector.broker.topic` sets the topic one wants to subscribe to in 
 
 __*Connect Distributed*__
 Kafka Connect Distributed does not need properties files to configure connectors. It uses the Kafka Connect REST-interface.
+
 5. Uncomment `plugin.path` in `"path-to-kafka"/kafka_2.13-2.4.1/config/connect-distributed.properties`, so that it is set to
 ```
 plugin.path=/usr/share/java,/usr/local/share/kafka/plugins,/usr/local/share/java/
@@ -108,6 +109,7 @@ and that `rest.port` so that it is set to
 rest.port=19005
 ```
 which will help one to avoid some "bind" exceptions. This will be the port for the Connect REST-interface.
+
 6. Start _Connect Distributed_ with by typing (this may take a minute or two):
 ```
 "path-to-kafka"/kafka_2.13-2.4.1/bin/connect-distributed.sh "path-to-kafka"/kafka_2.13-2.4.1/config/connect-distributed.properties
